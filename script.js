@@ -1,4 +1,5 @@
 const USE_EXTERNAL_WORDS = false; 
+const FALLBACK_WORDS = {
   4: [
     "able",
     "area",
