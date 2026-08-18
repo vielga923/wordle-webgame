@@ -1,5 +1,4 @@
-const USE_EXTERNAL_WORDS = false;
-const FALLBACK_WORDS = {
+const USE_EXTERNAL_WORDS = false; 
   4: [
     "able",
     "area",
@@ -382,6 +381,36 @@ function setAnimations(value) {
   savePreferences();
   render();
 }
+function focusMobileInput() {
+  const input = $("mobileInput");
+  if (
+    !input ||
+    state.result !== "playing" ||
+    state.loadingWord ||
+    state.revealingRow !== null
+  )
+    return;
+  input.value = state.guess;
+  input.focus({ preventScroll: true });
+}
+function syncMobileInput() {
+  const input = $("mobileInput");
+  if (!input) return;
+  const clean = input.value
+    .toLowerCase()
+    .replace(/[^a-z]/g, "")
+    .slice(0, state.length);
+  if (input.value !== clean) input.value = clean;
+  if (
+    state.result === "playing" &&
+    state.revealingRow === null &&
+    !state.loadingWord &&
+    state.guess !== clean
+  ) {
+    state.guess = clean;
+    render();
+  }
+}
 function celebrateConfetti() {
   if (!state.animationsEnabled) return;
   const canvas = $("confettiCanvas");
@@ -577,6 +606,15 @@ $("darkModeToggle").addEventListener("change", (event) =>
 $("animationsToggle").addEventListener("change", (event) =>
   setAnimations(event.target.checked),
 );
+$("mobileInput").addEventListener("input", syncMobileInput);
+$("mobileInput").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    submit();
+  }
+});
+$("board").addEventListener("click", focusMobileInput);
+$("board").addEventListener("touchstart", focusMobileInput, { passive: true });
 $("statsButton").addEventListener("click", () => openModal("statsModal"));
 $("settingsButton").addEventListener("click", () => openModal("settingsModal"));
 $("helpButton").addEventListener("click", () => openModal("helpModal"));
