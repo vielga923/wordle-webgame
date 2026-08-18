@@ -241,8 +241,18 @@ const state = {
   darkMode: localStorage.getItem("wordle-dark-mode") === "true",
   animationsEnabled:
     localStorage.getItem("wordle-animations-enabled") !== "false",
+  keyStates: {},
 };
 state.board = emptyBoard(state.length);
+const KEY_PRIORITY = { absent: 0, present: 1, correct: 2 };
+function updateKeyStates(result) {
+  result.forEach((tile) => {
+    const current = state.keyStates[tile.letter];
+    if (!current || KEY_PRIORITY[tile.state] > KEY_PRIORITY[current]) {
+      state.keyStates[tile.letter] = tile.state;
+    }
+  });
+}
 
 async function fetchExternalWord() {
   if (!USE_EXTERNAL_WORDS) return randomFallback();
@@ -370,6 +380,11 @@ function render() {
     });
     boardElement.appendChild(rowElement);
   });
+  document.querySelectorAll("#keyboard .key[data-key]").forEach((key) => {
+    const status = state.keyStates[key.dataset.key];
+    key.classList.remove("correct", "present", "absent");
+    if (status) key.classList.add(status);
+  });
 }
 
 function setDarkMode(value) {
@@ -479,6 +494,7 @@ function submit() {
   }
   const submittedRow = state.row;
   state.board[submittedRow] = evaluate(state.guess, state.answer);
+  updateKeyStates(state.board[submittedRow]);
   state.revealingRow = submittedRow;
   const submittedGuess = state.guess;
   render();
@@ -531,6 +547,7 @@ async function newRound() {
   state.revealingRow = null;
   state.celebratingRow = null;
   state.answerReveal = null;
+  state.keyStates = {};
   await refreshWord("Make your first guess");
 }
 async function chooseLength(length) {
@@ -545,31 +562,69 @@ function openModal(id) {
 function closeModal(id) {
   $(id).classList.add("hidden");
 }
-
-window.addEventListener("keydown", (event) => {
-  if (event.metaKey || event.ctrlKey || event.altKey) return;
-  if (event.key === "Enter") return submit();
-  if (event.key === "Backspace") {
-    if (
-      state.result === "playing" &&
-      state.revealingRow === null &&
-      !state.loadingWord
-    ) {
-      state.guess = state.guess.slice(0, -1);
-      render();
-    }
-    return;
-  }
+function typeLetter(letter) {
   if (
-    /^[a-zA-Z]$/.test(event.key) &&
     state.result === "playing" &&
     state.revealingRow === null &&
     !state.loadingWord &&
     state.guess.length < state.length
   ) {
-    state.guess += event.key.toLowerCase();
+    state.guess += letter;
     render();
   }
+}
+function backspace() {
+  if (
+    state.result === "playing" &&
+    state.revealingRow === null &&
+    !state.loadingWord
+  ) {
+    state.guess = state.guess.slice(0, -1);
+    render();
+  }
+}
+function buildKeyboard() {
+  const rows = [
+    ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+    ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+    ["ENTER", "z", "x", "c", "v", "b", "n", "m", "BACKSPACE"],
+  ];
+  const container = $("keyboard");
+  container.innerHTML = "";
+  rows.forEach((row) => {
+    const rowElement = document.createElement("div");
+    rowElement.className = "keyboard-row";
+    row.forEach((key) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      if (key === "ENTER") {
+        button.className = "key wide";
+        button.textContent = "ENTER";
+        button.setAttribute("aria-label", "Submit guess");
+        button.addEventListener("click", submit);
+      } else if (key === "BACKSPACE") {
+        button.className = "key wide";
+        button.textContent = "⌫";
+        button.setAttribute("aria-label", "Delete letter");
+        button.addEventListener("click", backspace);
+      } else {
+        button.className = "key";
+        button.textContent = key;
+        button.dataset.key = key;
+        button.setAttribute("aria-label", `Letter ${key}`);
+        button.addEventListener("click", () => typeLetter(key));
+      }
+      rowElement.appendChild(button);
+    });
+    container.appendChild(rowElement);
+  });
+}
+
+window.addEventListener("keydown", (event) => {
+  if (event.metaKey || event.ctrlKey || event.altKey) return;
+  if (event.key === "Enter") return submit();
+  if (event.key === "Backspace") return backspace();
+  if (/^[a-zA-Z]$/.test(event.key)) typeLetter(event.key.toLowerCase());
 });
 $("darkModeToggle").addEventListener("change", (event) =>
   setDarkMode(event.target.checked),
@@ -598,5 +653,6 @@ document.querySelectorAll(".overlay").forEach((overlay) =>
     if (event.target === overlay) closeModal(overlay.id);
   }),
 );
+buildKeyboard();
 render();
 refreshWord("Make your first guess");
