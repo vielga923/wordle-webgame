@@ -310,27 +310,6 @@ input:focus-visible {
     monospace;
   letter-spacing: 0.16em;
 }
-.mobile-input {
-  position: fixed;
-  left: 50%;
-  bottom: 8px;
-  width: 2px;
-  height: 2px;
-  padding: 0;
-  border: 0;
-  opacity: 0.01;
-  background: transparent;
-  color: transparent;
-  caret-color: transparent;
-  z-index: -1;
-}
-.mobile-input:focus {
-  outline: none;
-}
-.board:focus {
-  outline: 2px solid var(--coral);
-  outline-offset: 5px;
-}
 .board {
   display: flex;
   flex-direction: column;
