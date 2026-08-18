@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f8f7f2" />
+    <meta name="description" content="Wordle Lab — an endless word game." />
+    <title>Wordle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="game-page" id="gamePage">
+      <header class="game-header">
+        <div class="brand">
+          <div class="brand-badge">W</div>
+          <div>
+            <strong>WORDLE</strong><span>an endless word game</span>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="statsButton" aria-label="Stats" title="Stats">▥</button>
+          <button id="settingsButton" aria-label="Settings" title="Settings">
+            ⚙
+          </button>
+          <button id="helpButton" aria-label="How to play" title="How to play">
+            ?
+          </button>
+        </div>
+      </header>
+
+      <div class="game-nav">
+        <span><i class="live-dot"></i> ROUND <b id="roundNumber">01</b></span>
+        <span class="nav-center">NO DAILY LIMIT / JUST PLAY</span>
+        <span>✦ <b id="streakNumber">0</b> STREAK</span>
+      </div>
+
+      <main class="game-main">
+        <section class="intro">
+          <div>
+            <p class="kicker" id="lengthKicker">FIVE LETTERS / SIX TRIES</p>
+            <h1>Find the word.<br /><span>Keep the spark.</span></h1>
+          </div>
+          <div class="intro-note">
+            Every round is a fresh<br />little puzzle to crack.
+          </div>
+        </section>
+
+        <section class="game-card">
+          <div class="mode-switch" role="group" aria-label="Word length">
+            <span>WORD LENGTH</span><button data-length="4">4</button
+            ><button data-length="5" class="active">5</button
+            ><button data-length="6">6</button>
+          </div>
+          <div class="card-top">
+            <div class="status" id="status">
+              <span class="status-mark"></span
+              ><span id="notice">Make your first guess</span>
+            </div>
+            <button class="restart-link" id="newRoundButton">
+              ↻ NEW ROUND
+            </button>
+          </div>
+          <div class="answer-reveal hidden" id="answerReveal">
+            <span>THE WORD WAS</span><strong id="revealedWord"></strong>
+          </div>
+          <div class="board" id="board" aria-label="Wordle board"></div>
+          <div class="legend">
+            <span><i class="legend-square correct"></i> right place</span
+            ><span><i class="legend-square present"></i> wrong place</span
+            ><span><i class="legend-square absent"></i> not here</span>
+          </div>
+        </section>
+
+        <p class="keyboard-hint">
+          <span>TYPE WITH YOUR KEYBOARD</span
+          ><span>ENTER TO SUBMIT · BACKSPACE TO DELETE</span>
+        </p>
+        <footer class="game-footer">
+          <span>PLAYED <b id="playedCount">0</b></span
+          ><span>SOLVED <b id="winsCount">0</b></span
+          ><span>BEST STREAK <b id="bestCount">0</b></span
+          ><span class="footer-tag">PLAY A LITTLE. THINK A LOT.</span>
+        </footer>
+      </main>
+
+      <div class="overlay hidden" id="helpModal">
+        <div class="dialog">
+          <button class="close" data-close="helpModal" aria-label="Close">
+            ×
+          </button>
+          <p class="kicker">HOW TO PLAY</p>
+          <h2>Six tries. One word.</h2>
+          <p>
+            Type a word matching the selected length, then press Enter. Green
+            means the letter is in the right place, yellow means it belongs
+            somewhere else, and gray means it is not in the word.
+          </p>
+          <div class="examples">
+            <div>
+              <span class="sample correct">W</span
+              ><span>right letter, right place</span>
+            </div>
+            <div>
+              <span class="sample present">O</span
+              ><span>right letter, wrong place</span>
+            </div>
+            <div>
+              <span class="sample absent">R</span
+              ><span>letter is not in the word</span>
+            </div>
+          </div>
+          <button class="dialog-button" data-close="helpModal">GOT IT</button>
+        </div>
+      </div>
+
+      <div class="overlay hidden" id="statsModal">
+        <div class="dialog">
+          <button class="close" data-close="statsModal" aria-label="Close">
+            ×
+          </button>
+          <p class="kicker">YOUR STATS</p>
+          <h2>Keep the spark.</h2>
+          <div class="stat-cards">
+            <div><strong id="modalPlayed">0</strong><span>played</span></div>
+            <div><strong id="modalWins">0</strong><span>solved</span></div>
+            <div><strong id="modalBest">0</strong><span>best streak</span></div>
+            <div>
+              <strong id="modalWinRate">0%</strong><span>win rate</span>
+            </div>
+          </div>
+          <div class="stats-section">
+            <div class="stats-section-head">
+              <span>GUESS DISTRIBUTION</span
+              ><span id="distributionTotal">0 SOLVED</span>
+            </div>
+            <div id="guessDistribution" class="distribution"></div>
+          </div>
+          <div class="record-line">
+            <span>CURRENT STREAK</span><strong id="modalStreak">0</strong>
+          </div>
+          <button class="dialog-button" data-close="statsModal">
+            BACK TO GAME
+          </button>
+        </div>
+      </div>
+
+      <div class="overlay hidden" id="settingsModal">
+        <div class="dialog settings-dialog">
+          <button class="close" data-close="settingsModal" aria-label="Close">
+            ×
+          </button>
+          <p class="kicker">GAME SETTINGS</p>
+          <h2>Make it yours.</h2>
+          <p class="settings-intro">
+            Tune the theme and motion without leaving the game.
+          </p>
+          <div class="settings-list">
+            <label class="setting-row"
+              ><span
+                ><strong>Dark mode</strong
+                ><small>Lower-light game surface</small></span
+              ><input id="darkModeToggle" type="checkbox" /><i
+                class="switch"
+              ></i></label
+            ><label class="setting-row"
+              ><span
+                ><strong>Animations</strong
+                ><small>Tile flips, dances, and badges</small></span
+              ><input id="animationsToggle" type="checkbox" /><i
+                class="switch"
+              ></i
+            ></label>
+          </div>
+          <button class="dialog-button" data-close="settingsModal">DONE</button>
+        </div>
+      </div>
+
+      <canvas
+        class="confetti-canvas"
+        id="confettiCanvas"
+        aria-hidden="true"
+      ></canvas>
+      <div
+        class="milestone-pop hidden"
+        id="milestonePop"
+        role="status"
+        aria-live="polite"
+      >
+        <div class="milestone-burst" id="milestoneBurst"></div>
+        <div>
+          <span id="milestoneLabel">STREAK MILESTONE</span
+          ><strong id="milestoneTitle"></strong>
+          <p id="milestoneCopy"></p>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

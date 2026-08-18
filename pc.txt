@@ -1,0 +1,68 @@
+START GAME
+
+Load the saved settings and statistics.
+Choose a word length: 4, 5, or 6 letters.
+Choose a valid answer word.
+Create an empty board with 6 rows.
+
+WHILE the game is open:
+
+    Wait for the player to press a key.
+
+    IF the player presses a letter:
+        Add the letter to the current guess.
+
+    IF the player presses Backspace:
+        Remove the last letter from the guess.
+
+    IF the player presses Enter:
+
+        IF the guess is not the correct length:
+            Show a message asking for the correct number of letters.
+
+        ELSE:
+            Compare the guess with the answer.
+
+            For every letter:
+                IF the letter is in the correct position:
+                    Mark it GREEN.
+                ELSE IF the letter exists somewhere else in the answer:
+                    Mark it YELLOW.
+                ELSE:
+                    Mark it GRAY.
+
+            Show the tile flip animation.
+
+            IF the guess is correct:
+                Show the celebration animation and confetti.
+                Increase the win count.
+                Increase the current streak.
+                Update the best streak if necessary.
+                Show a milestone badge at 3, 5, or 10 wins.
+                Wait for the player to start a new round.
+
+            ELSE IF the player used the sixth guess:
+                Reveal the correct answer.
+                Reset the current streak.
+                Update the statistics.
+                Start a new round automatically.
+
+            ELSE:
+                Move to the next row.
+                Clear the current guess.
+
+    IF the player changes the word length:
+        Save the new length.
+        Start a new round.
+
+    IF the player opens Statistics:
+        Show games played, wins, win percentage,
+        current streak, best streak, and guess distribution.
+
+    IF the player opens Settings:
+        Allow dark mode and animations to be turned on or off.
+        Save the settings.
+
+END WHILE
+
+END GAME
