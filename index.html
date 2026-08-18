@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
     <meta name="theme-color" content="#f8f7f2" />
     <meta name="description" content="Wordle Lab — an endless word game." />
     <title>Wordle</title>
@@ -19,9 +22,7 @@
       <header class="game-header">
         <div class="brand">
           <div class="brand-badge">W</div>
-          <div>
-            <strong>WORDLE</strong><span>an endless word game</span>
-          </div>
+          <div><strong>WORDLE</strong><span>an endless word game</span></div>
         </div>
         <div class="header-actions">
           <button id="statsButton" aria-label="Stats" title="Stats">▥</button>
@@ -75,6 +76,11 @@
             ><span><i class="legend-square present"></i> wrong place</span
             ><span><i class="legend-square absent"></i> not here</span>
           </div>
+          <div
+            class="keyboard"
+            id="keyboard"
+            aria-label="On-screen keyboard"
+          ></div>
         </section>
 
         <p class="keyboard-hint">
