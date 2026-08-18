@@ -19,27 +19,11 @@
       <header class="game-header">
         <div class="brand">
           <div class="brand-badge">W</div>
-          <div><strong>WORDLE</strong><span>an endless word game</span></div>
+          <div>
+            <strong>WORDLE</strong><span>an endless word game</span>
+          </div>
         </div>
         <div class="header-actions">
-          <button
-            class="sound-toggle"
-            id="soundToggle"
-            aria-label="Enable success sound"
-            title="Enable success sound"
-          ></button>
-          <label class="volume-control" title="Celebration volume">
-            <input
-              id="volumeSlider"
-              type="range"
-              min="0"
-              max="1"
-              step="0.05"
-              value="0.65"
-              aria-label="Celebration sound volume"
-            />
-            <span id="volumeValue">65%</span>
-          </label>
           <button id="statsButton" aria-label="Stats" title="Stats">▥</button>
           <button id="settingsButton" aria-label="Settings" title="Settings">
             ⚙
@@ -59,7 +43,7 @@
       <main class="game-main">
         <section class="intro">
           <div>
-            <p class="kicker">FIVE LETTERS / SIX TRIES</p>
+            <p class="kicker" id="lengthKicker">FIVE LETTERS / SIX TRIES</p>
             <h1>Find the word.<br /><span>Keep the spark.</span></h1>
           </div>
           <div class="intro-note">
@@ -68,6 +52,11 @@
         </section>
 
         <section class="game-card">
+          <div class="mode-switch" role="group" aria-label="Word length">
+            <span>WORD LENGTH</span><button data-length="4">4</button
+            ><button data-length="5" class="active">5</button
+            ><button data-length="6">6</button>
+          </div>
           <div class="card-top">
             <div class="status" id="status">
               <span class="status-mark"></span
@@ -108,9 +97,9 @@
           <p class="kicker">HOW TO PLAY</p>
           <h2>Six tries. One word.</h2>
           <p>
-            Type any five-letter word, then press Enter. Green means the letter
-            is in the right place, yellow means it belongs somewhere else, and
-            gray means it is not in the word.
+            Type a word matching the selected length, then press Enter. Green
+            means the letter is in the right place, yellow means it belongs
+            somewhere else, and gray means it is not in the word.
           </p>
           <div class="examples">
             <div>
@@ -141,6 +130,19 @@
             <div><strong id="modalPlayed">0</strong><span>played</span></div>
             <div><strong id="modalWins">0</strong><span>solved</span></div>
             <div><strong id="modalBest">0</strong><span>best streak</span></div>
+            <div>
+              <strong id="modalWinRate">0%</strong><span>win rate</span>
+            </div>
+          </div>
+          <div class="stats-section">
+            <div class="stats-section-head">
+              <span>GUESS DISTRIBUTION</span
+              ><span id="distributionTotal">0 SOLVED</span>
+            </div>
+            <div id="guessDistribution" class="distribution"></div>
+          </div>
+          <div class="record-line">
+            <span>CURRENT STREAK</span><strong id="modalStreak">0</strong>
           </div>
           <button class="dialog-button" data-close="statsModal">
             BACK TO GAME
@@ -156,7 +158,7 @@
           <p class="kicker">GAME SETTINGS</p>
           <h2>Make it yours.</h2>
           <p class="settings-intro">
-            Tune the atmosphere, sound, and motion without leaving the game.
+            Tune the theme and motion without leaving the game.
           </p>
           <div class="settings-list">
             <label class="setting-row"
@@ -164,13 +166,6 @@
                 ><strong>Dark mode</strong
                 ><small>Lower-light game surface</small></span
               ><input id="darkModeToggle" type="checkbox" /><i
-                class="switch"
-              ></i></label
-            ><label class="setting-row"
-              ><span
-                ><strong>Sound effects</strong
-                ><small>Celebration sound on correct guesses</small></span
-              ><input id="soundSettingToggle" type="checkbox" /><i
                 class="switch"
               ></i></label
             ><label class="setting-row"
@@ -186,6 +181,11 @@
         </div>
       </div>
 
+      <canvas
+        class="confetti-canvas"
+        id="confettiCanvas"
+        aria-hidden="true"
+      ></canvas>
       <div
         class="milestone-pop hidden"
         id="milestonePop"
